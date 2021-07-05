@@ -2,7 +2,7 @@
 #define _KMEANS_COLOR_H
 
 #include "/Users/jwbates/Projects/pal/src/include/centroid.h"
-#include "/Users/jwbates/Projects/pal/src/include/color_set.h"
+#include "/Users/jwbates/Projects/pal/src/include/bitmap.h"
 
 //
 // UNDONE is just a large value to be used as the 'maximum minimum' while searching for the
@@ -39,18 +39,15 @@ public:
 		    _centroids[i].color().dumpToSerial();
 	  }
     
-     void cluster(const ColorSet & colors)
+     void cluster(const Bitmap & bitmap)
 	  {
 	       for (short iterations_so_far = 0;
 		    iterations_so_far < _maxIterations;
 		    iterations_so_far++)
 	       {
-		    for (short i = 0; i < colors.maxIndex(); i++)
+		    for (short i = 0; i < bitmap.items(); i++)
 		    {
-			 if (colors.countAt(i) != 0)
-			 {
-			      this->_addColor(colors.colorAt(i), colors.countAt(i));
-			 }
+			 this->_addColor(bitmap.get(i));
 		    }
 	    
 		    if (this->update()) {
@@ -60,6 +57,14 @@ public:
 
 		    Serial.print("System finished iteration: ");
 		    Serial.println(iterations_so_far);
+	       }
+	  }
+
+     void reset()
+	  {
+	       for (byte i = 0; i < _numCentroids; i++)
+	       {
+		    _centroids[i].randomize();
 	       }
 	  }
 
@@ -87,7 +92,7 @@ private:
      short      _maxIterations;
      double     _convergence;
      
-     void _addColor(const Color & color, const int count)
+     void _addColor(const Color & color, const int count = 1)
 	  {
 	       Centroid * closest;
 	       double min = UNDONE;
@@ -97,7 +102,7 @@ private:
 		    double distance = _centroids[i].distance(color);
 		    if (distance < min)
 		    {
-			 closest = &_centroids[i];
+			 closest = &(_centroids[i]);
 			 min = distance;
 		    }
 	       }

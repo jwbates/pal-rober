@@ -24,6 +24,7 @@ public:
      double randomize()
 	  {
 	       _color.randomize();
+	       _member_count = 0;
 	  }
 
      double distance(const Color & color) const

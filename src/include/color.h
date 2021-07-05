@@ -4,7 +4,7 @@
 #include <math.h>
 
 #define RED_MASK    0xF800
-#define GREEN_MASK  0x07E0
+#define GREEN_MASK  0x03E0
 #define BLUE_MASK   0x001F
 
 #define RED_PIXEL(val)    ((val & RED_MASK) >> 11) << 3
