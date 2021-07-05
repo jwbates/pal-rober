@@ -22,19 +22,27 @@ public:
      Color(uint8_t red, uint8_t green, uint8_t blue) :
 	  _red(red), _green(green), _blue(blue)
 	  {
+	       _pixel = RGB16(_red, _green, _blue);
 	  }
 
      Color(word pixel):
 	  _red(RED_PIXEL(pixel)),
 	  _green(GREEN_PIXEL(pixel)),
-	  _blue(BLUE_PIXEL(pixel))
+	  _blue(BLUE_PIXEL(pixel)),
+	  _pixel(pixel)
 	  {
 	  }
+     
      Color(const Color & other):
-	  _red(other._red), _green(other._green), _blue(other._blue)
+	  _red(other._red), _green(other._green), _blue(other._blue), _pixel(other._pixel)
 	  {}
 
      operator uint16_t() const
+	  {
+	       return _pixel;
+	  }
+
+     uint16_t uint() const
 	  {
 	       return RGB16(_red, _green, _blue);
 	  }
@@ -73,15 +81,16 @@ public:
 	       _red = other.red();
 	       _green = other.green();
 	       _blue = other.blue();
+	       _pixel = other._pixel;
 	       
 	       return *this;
 	  }
 
      const double distance(const Color & other) const
 	  {
-	       double red = (double) (this->red() - other.red());
-	       double green = (double) (this->green() - other.green());
-	       double blue = (double) (this->blue() - other.blue());
+	       double red = (double) ((double) this->red() - (double) other.red());
+	       double green = (double) ((double)this->green() - (double)other.green());
+	       double blue = (double) ((double)this->blue() - (double)other.blue());
 
 	       double squared = red * red + green * green + blue*blue;
 
@@ -96,6 +105,7 @@ public:
      const void red(const uint8_t val)
 	  {
 	       _red = val;
+	       _pixel = RGB16(_red, _green, _blue);
 	  }
 
      const uint8_t green() const
@@ -106,6 +116,7 @@ public:
      const void green(const uint8_t val)
 	  {
 	       _green = val;
+	       _pixel = RGB16(_red, _green, _blue);
 	  }
      
      const uint8_t blue() const
@@ -116,12 +127,14 @@ public:
      const void blue(const uint8_t val)
 	  {
 	       _blue = val;
+	       _pixel = RGB16(_red, _green, _blue);
 	  }
 
 private:
      uint8_t _red = 0;
      uint8_t _green = 0;
      uint8_t _blue = 0;
+     word    _pixel = 0;
 };
 
 #endif /* _COLOR_H */

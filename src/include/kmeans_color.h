@@ -3,6 +3,7 @@
 
 #include "/Users/jwbates/Projects/pal/src/include/centroid.h"
 #include "/Users/jwbates/Projects/pal/src/include/bitmap.h"
+#include "/Users/jwbates/Projects/pal/src/include/color_counter.h"
 
 //
 // UNDONE is just a large value to be used as the 'maximum minimum' while searching for the
@@ -16,7 +17,7 @@
 //
 #define MAX_CLUSTERS   8
 
-#define DEFAULT_CONVERGENCE 0.001
+#define DEFAULT_CONVERGENCE 0.0001
 
 class KMeansColor
 {
@@ -39,15 +40,25 @@ public:
 		    _centroids[i].color().dumpToSerial();
 	  }
     
-     void cluster(const Bitmap & bitmap)
+     void cluster(const ColorCounter & counter)
 	  {
-	       for (short iterations_so_far = 0;
+	       short iterations_so_far;
+
+	       Serial.println("Starting clustering");
+	       for (iterations_so_far = 0;
 		    iterations_so_far < _maxIterations;
 		    iterations_so_far++)
 	       {
-		    for (short i = 0; i < bitmap.items(); i++)
+		    for (int i = 0; i < counter.maxIndex(); i++)
 		    {
-			 this->_addColor(bitmap.get(i));
+			 if (counter.count(i) == 0)
+			      continue;
+			 
+			 this->_addColor(i, counter.count(i));
+			 if (i % 10000 == 0) {
+			      Serial.print("sub-iteration: ");
+			      Serial.println(i);
+			 }
 		    }
 	    
 		    if (this->update()) {
@@ -58,6 +69,9 @@ public:
 		    Serial.print("System finished iteration: ");
 		    Serial.println(iterations_so_far);
 	       }
+
+	       if (iterations_so_far >= _maxIterations)
+		    Serial.println("Did not converge");
 	  }
 
      void reset()
@@ -66,6 +80,26 @@ public:
 	       {
 		    _centroids[i].randomize();
 	       }
+	  }
+
+     const Color closestMatch(const Color & color, const ColorCounter & counter)
+	  {
+	       double min_distance = UNDONE;
+	       Color min_color;
+
+	       for (int i = 0; i < counter.maxIndex(); i++)
+	       {
+		    if (counter.count(i) == 0)
+			 continue;
+
+		    double distance = color.distance(Color(i));
+		    if (distance < min_distance) {
+			 min_distance = distance;
+			 min_color = Color(i);
+		    }
+	       }
+
+	       return min_color;
 	  }
 
      // returns true if converged
