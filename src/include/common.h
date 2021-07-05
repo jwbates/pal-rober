@@ -17,4 +17,6 @@
 
 #define IMAGE_BYTES       IMAGE_WIDTH*IMAGE_HEIGHT*BYTES_PER_PIXEL
 
+#define CLUSTER_COUNT     6
+
 #endif /* _COMMON_H */
