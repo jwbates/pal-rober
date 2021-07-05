@@ -11,7 +11,7 @@
 #define GREEN_PIXEL(val)  ((val & GREEN_MASK) >> 5) << 3
 #define BLUE_PIXEL(val)   ((val & BLUE_MASK)) << 3
 
-#define TRUNCATE(x)  ((x) >> 3)
+#define TRUNCATE(x)  (((int) x) >> 3)
 #define RGB16(r,g,b) ((TRUNCATE(r) << 11) | (TRUNCATE(g) << 5) | TRUNCATE(b))
 
 class Color
@@ -34,7 +34,7 @@ public:
 	  _red(other._red), _green(other._green), _blue(other._blue)
 	  {}
 
-     operator int() const
+     operator uint16_t() const
 	  {
 	       return RGB16(_red, _green, _blue);
 	  }

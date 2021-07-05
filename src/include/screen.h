@@ -7,6 +7,7 @@
 
 #include "/Users/jwbates/Projects/pal/src/include/common.h"
 #include "/Users/jwbates/Projects/pal/src/include/color.h"
+#include "/Users/jwbates/Projects/pal/src/include/camera.h"
 
 #define MIN_PRESSURE 10
 
@@ -24,14 +25,15 @@
 
 #define	BLACK   0x0000
 #define	RED     0xF800
-#define GREY    0x8210
+#define GREY    0x4210
 
 class Screen
 {
 public:
-     Screen() :
+     Screen(Camera & camera) :
 	  _ts(XP, YP, XM, YM, 300),
-	  _tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET)
+	  _tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET),
+	  _camera(camera)
 	  {
 	       _tft.reset();
 	       _tft.begin(_tft.readID());
@@ -70,9 +72,19 @@ public:
 	       _needsRedraw = false;
 	  }
 
+     void setColor(short index, const Color & color)
+	  {
+	       if (_buttonActive == false)
+		    _buttonActive = true;
+
+	       _colors[index] = color;
+	       _needsRedraw = true;
+	  }
+
 private:
      TouchScreen      _ts;
      Elegoo_TFTLCD    _tft;
+     Camera &         _camera;
      int16_t          _height;
      int16_t          _width;
 
@@ -136,8 +148,13 @@ private:
 
      void _drawSwatch(short index)
 	  {
-	       int color = (int) _colors[index];
+	       uint16_t color = (uint16_t) _colors[index];
+	       if (!_buttonActive)
+		    color = BLACK;
 	       int base_y = _buttonHeight + index * _swatchHeight;
+
+	       Serial.println("Setting swatch to:");
+	       Serial.println(color);
 
 	       _tft.fillRect(0, base_y+5, _width, base_y + _swatchHeight-5, color);
 	  }
@@ -150,6 +167,8 @@ private:
 	       if (y > _swatchHeight)
 	       {
 		    Serial.println("BUTTON PRESSED");
+		    _buttonActive = false;
+		    _camera.start();
 		    _needsRedraw = true;
 	       }
 	  }
