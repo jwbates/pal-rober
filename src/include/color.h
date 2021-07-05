@@ -86,6 +86,16 @@ public:
 	       return *this;
 	  }
 
+     const Color & operator=(const word other)
+	  {
+	       _pixel = other;
+	       _red = RED_PIXEL(other);
+	       _green = GREEN_PIXEL(other);
+	       _blue = BLUE_PIXEL(other);
+
+	       return *this;
+	  }
+
      const double distance(const Color & other) const
 	  {
 	       double red = (double) ((double) this->red() - (double) other.red());

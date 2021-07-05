@@ -21,6 +21,11 @@ public:
 	       return _color;
 	  }
 
+     Color & color()
+	  {
+	       return _color;
+	  }
+
      double randomize()
 	  {
 	       _color.randomize();

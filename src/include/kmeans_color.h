@@ -44,6 +44,8 @@ public:
 	  {
 	       short iterations_so_far;
 
+	       _pickCentroids(counter);
+
 	       Serial.println("Starting clustering");
 	       for (iterations_so_far = 0;
 		    iterations_so_far < _maxIterations;
@@ -142,6 +144,33 @@ private:
 	       }
 	       
 	       closest->add_to_cluster(color, count);
+	  }
+
+     void _pickCentroids(const ColorCounter & counter)
+	  {
+	       int active_count = 0;
+
+	       for (int i = 0; i < counter.maxIndex(); i++)
+		    if (counter.count(i) > 0)
+			 active_count++;
+
+	       for (byte i = 0; i < _numCentroids; i++)
+	       {
+		    int selection = random(active_count);
+		    int so_far = 0;
+		    for (int j = 0; j < counter.maxIndex(); j++)
+		    {
+			 if (counter.count(j) == 0)
+			      continue;
+			 if (selection == so_far)
+			 {
+			      _centroids[i].color() = (word) j;
+			      break;
+			 } else {
+			      so_far++;
+			 }
+		    }
+	       }
 	  }
 
 };
